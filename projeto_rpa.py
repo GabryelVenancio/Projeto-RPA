@@ -10,6 +10,10 @@ data = response.json()
 personagens = data['results']
 dados_formatados = [(p['id'], p['name'], p['status'], p['species'], p['gender']) for p in personagens]
 
+print("✅ Exemplo de dados coletados da API:")
+for linha in dados_formatados[:3]:
+    print(linha)
+
 conn = sqlite3.connect('projeto_rpa.db')
 cursor = conn.cursor()
 
@@ -22,6 +26,7 @@ cursor.execute('''
         genero TEXT
     )
 ''')
+print("📦 Tabela 'personagens' criada com sucesso!")
 
 cursor.executemany('''
     INSERT OR REPLACE INTO personagens (id, nome, status, especie, genero)
@@ -39,6 +44,10 @@ for nome, status, especie, genero in todos_personagens:
     if re.match(padrao, nome):
         resultados_processados.append((nome, status, especie, genero))
 
+print("🧪 Personagens com nomes compostos (processados):")
+for linha in resultados_processados[:3]:
+    print(linha)
+
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS dados_processados (
         nome TEXT,
@@ -47,12 +56,14 @@ cursor.execute('''
         genero TEXT
     )
 ''')
+print("📦 Tabela 'dados_processados' criada com sucesso!")
 
 cursor.executemany('''
     INSERT INTO dados_processados (nome, status, especie, genero)
     VALUES (?, ?, ?, ?)
 ''', resultados_processados)
 conn.commit()
+print("📥 Dados processados inseridos na tabela 'dados_processados' com sucesso!")
 
 EMAIL = "gabrielvenanciocleffs@gmail.com"
 SENHA = "ormv pbfv akat lvww"
@@ -78,8 +89,8 @@ try:
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL, SENHA)
         smtp.send_message(mensagem)
-    print("E-mail enviado com sucesso!")
+    print("✅ E-mail enviado com sucesso!")
 except Exception as e:
-    print(f"Erro ao enviar e-mail: {e}")
+    print(f"❌ Erro ao enviar e-mail: {e}")
 
 conn.close()
